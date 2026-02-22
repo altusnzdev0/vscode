@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ProductMDM</name>
+    </assembly>
+    <members>
+        <member name="T:ProductMDM.Controllers.Api.MetadataController">
+            <summary>
+            Simple metadata endpoint describing entities, keys and enums to help external consumers.
+            This is intentionally lightweight; expand as needed.
+            </summary>
+        </member>
+        <member name="M:ProductMDM.Controllers.Api.ProductsController.Get(System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Decimal},System.Nullable{System.Decimal},System.Nullable{System.Boolean},System.Int32,System.Int32)">
+            <summary>
+            Returns a paged list of products. Read-only API for external consumers.
+            </summary>
+        </member>
+        <member name="T:ProductMDM.Data.ApplicationDbContext">
+            <summary>
+            EF Core DbContext for ProductMDM. Configures entities and constraints using Fluent API.
+            </summary>
+        </member>
+        <member name="T:ProductMDM.Models.Brand">
+            <summary>
+            Brand entity: groups products by manufacturer/brand.
+            </summary>
+        </member>
+        <member name="T:ProductMDM.Models.Category">
+            <summary>
+            Category in a self-referencing hierarchy.
+            </summary>
+        </member>
+        <member name="T:ProductMDM.Models.ProductStatus">
+            <summary>
+            Product lifecycle status in MDM.
+            </summary>
+        </member>
+        <member name="T:ProductMDM.Models.AttributeDataType">
+            <summary>
+            Logical data types for product attributes.
+            Stored as string in v1 but type is recorded for consumers.
+            </summary>
+        </member>
+        <member name="T:ProductMDM.Models.PriceList">
+            <summary>
+            Price list defining a currency and usage (default price list indicated with IsDefault).
+            </summary>
+        </member>
+        <member name="T:ProductMDM.Models.Product">
+            <summary>
+            Master product record.
+            </summary>
+        </member>
+        <member name="T:ProductMDM.Models.ProductAttribute">
+            <summary>
+            Free-form attribute for a product. Keys must be unique per product.
+            Value stored as string; DataType describes how to interpret it.
+            </summary>
+        </member>
+        <member name="T:ProductMDM.Models.ProductImage">
+            <summary>
+            Image metadata for a product. v1 stores only image URLs.
+            </summary>
+        </member>
+        <member name="T:ProductMDM.Models.ProductPrice">
+            <summary>
+            Price for a product in a specific PriceList with an effective date.
+            Unique per (ProductId, PriceListId, EffectiveFrom).
+            </summary>
+        </member>
+        <member name="T:ProductMDM.Models.ProductRelation">
+            <summary>
+            Relation between products (e.g., accessory, similar)
+            Unique per (ProductId, RelatedProductId, RelationType)
+            </summary>
+        </member>
+        <member name="T:ProductMDM.Services.IProductService">
+            <summary>
+            Lightweight service abstraction for common product queries used by pages and APIs.
+            Keeps controller and page code small and testable.
+            </summary>
+        </member>
+        <member name="T:ProductMDM.Services.ProductService">
+            <summary>
+            Concrete implementation of <see cref="T:ProductMDM.Services.IProductService"/> using EF Core.
+            </summary>
+        </member>
+        <member name="T:Program">
+            <summary>
+            Auto-generated public partial Program class for top-level statement apps.
+            </summary>
+        </member>
+    </members>
+</doc>

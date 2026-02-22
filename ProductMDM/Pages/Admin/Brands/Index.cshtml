@@ -1,0 +1,15 @@
+@page
+@model ProductMDM.Pages.Admin.Brands.IndexModel
+
+<h2>Brands</h2>
+
+<a class="btn btn-success mb-2" href="/Admin/Brands/Edit">Create Brand</a>
+
+<table class="table table-sm">
+  <thead><tr><th>Name</th><th></th></tr></thead>
+  <tbody>
+    @foreach(var b in Model.Items){
+      <tr><td>@b.Name</td><td><a class="btn btn-sm btn-outline-primary" href="/Admin/Brands/Edit?id=@b.BrandId">Edit</a></td></tr>
+    }
+  </tbody>
+</table>

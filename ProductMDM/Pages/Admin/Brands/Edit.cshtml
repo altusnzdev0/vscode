@@ -1,0 +1,21 @@
+@page
+@model ProductMDM.Pages.Admin.Brands.EditModel
+
+<h2>@(Model.IsNew ? "Create Brand" : "Edit Brand")</h2>
+
+<form method="post">
+  @Html.AntiForgeryToken()
+  <div class="mb-3">
+    <label class="form-label">Name</label>
+    <input asp-for="Brand.Name" class="form-control" />
+    <span asp-validation-for="Brand.Name" class="text-danger"></span>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Description</label>
+    <textarea asp-for="Brand.Description" class="form-control"></textarea>
+  </div>
+  <button class="btn btn-primary">Save</button>
+  <a class="btn btn-secondary" href="/Admin/Brands">Cancel</a>
+</form>
+
+<partial name="_ValidationScriptsPartial" />

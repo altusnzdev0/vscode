@@ -1,0 +1,153 @@
+@page
+@model ProductMDM.Pages.Admin.Products.EditModel
+@{
+    ViewData["Title"] = Model.IsNew ? "Create Product" : "Edit Product";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form method="post">
+  @Html.AntiForgeryToken()
+  <div class="mb-3">
+    <label class="form-label">SKU</label>
+    <input asp-for="Product.SKU" class="form-control" />
+    <span asp-validation-for="Product.SKU" class="text-danger"></span>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Name</label>
+    <input asp-for="Product.Name" class="form-control" />
+    <span asp-validation-for="Product.Name" class="text-danger"></span>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Brand</label>
+    <select asp-for="Product.BrandId" asp-items="Model.BrandOptions" class="form-select"></select>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Category</label>
+    <select asp-for="Product.CategoryId" asp-items="Model.CategoryOptions" class="form-select"></select>
+  </div>
+  <div class="mb-3 form-check">
+    <input asp-for="Product.IsPublished" class="form-check-input" />
+    <label class="form-check-label">Is Published</label>
+  </div>
+  <button class="btn btn-primary">Save</button>
+  <a class="btn btn-secondary" href="/Admin/Products">Cancel</a>
+</form>
+
+<hr />
+
+<h4>Attributes</h4>
+<table class="table table-sm">
+  <thead><tr><th>Key</th><th>Value</th><th>Type</th><th>Sort</th><th></th></tr></thead>
+  <tbody>
+    @foreach(var a in Model.Product.Attributes ?? Enumerable.Empty<ProductMDM.Models.ProductAttribute>()){
+      <tr>
+        <td>@a.Key</td>
+        <td>@a.Value</td>
+        <td>@a.DataType</td>
+        <td>@a.SortOrder</td>
+        <td>
+          <form method="post" asp-page-handler="DeleteAttribute" class="d-inline">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="attributeId" value="@a.AttributeId" />
+            <button class="btn btn-sm btn-danger">Delete</button>
+          </form>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
+
+<h5>Add / Update Attribute</h5>
+<form method="post" asp-page-handler="AddAttribute" class="row g-2">
+  @Html.AntiForgeryToken()
+  <div class="col-md-3">
+    <input name="Key" class="form-control" placeholder="Key" />
+  </div>
+  <div class="col-md-4">
+    <input name="Value" class="form-control" placeholder="Value" />
+  </div>
+  <div class="col-md-2">
+    <select name="DataType" class="form-select">
+      <option value="0">String</option>
+      <option value="1">Int</option>
+      <option value="2">Decimal</option>
+      <option value="3">Bool</option>
+      <option value="4">Date</option>
+    </select>
+  </div>
+  <div class="col-md-1">
+    <input name="SortOrder" type="number" value="100" class="form-control" />
+  </div>
+  <div class="col-md-2">
+    <button class="btn btn-primary">Add / Update</button>
+  </div>
+</form>
+
+<partial name="_ValidationScriptsPartial" />
+
+<hr />
+
+<h4>Related Products</h4>
+<table class="table table-sm">
+  <thead><tr><th>Related Product</th><th>Type</th><th></th></tr></thead>
+  <tbody>
+    @foreach(var r in Model.Product.Relations ?? Enumerable.Empty<ProductMDM.Models.ProductRelation>()){
+      <tr>
+        <td>@r.RelatedProductId</td>
+        <td>@r.RelationType</td>
+        <td>
+          <form method="post" asp-page-handler="DeleteRelation" class="d-inline">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="relationId" value="@r.ProductRelationId" />
+            <button class="btn btn-sm btn-danger">Remove</button>
+          </form>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
+
+<form method="post" asp-page-handler="AddRelation" class="row g-2 mb-3">
+  @Html.AntiForgeryToken()
+  <input type="hidden" name="ProductId" value="@Model.Product.ProductId" />
+  <div class="col-md-3"><input name="RelatedProductId" type="number" class="form-control" placeholder="Related ProductId" /></div>
+  <div class="col-md-4"><input name="RelationType" class="form-control" placeholder="Relation type (Accessory)" /></div>
+  <div class="col-md-2"><button class="btn btn-primary">Add Relation</button></div>
+</form>
+
+<h4>Images</h4>
+<table class="table table-sm">
+  <thead><tr><th>Image</th><th>Caption</th><th>Primary</th><th></th></tr></thead>
+  <tbody>
+    @foreach(var i in Model.Product.Images ?? Enumerable.Empty<ProductMDM.Models.ProductImage>()){
+      <tr>
+        <td style="max-width:200px;overflow:hidden"><img src="@i.ImageUrl" style="height:60px;object-fit:cover" /></td>
+        <td>@i.Caption</td>
+        <td>@(i.IsPrimary ? "Yes" : "")</td>
+        <td>
+          <form method="post" asp-page-handler="SetPrimaryImage" class="d-inline">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="imageId" value="@i.ProductImageId" />
+            <button class="btn btn-sm btn-outline-secondary">Set Primary</button>
+          </form>
+          <form method="post" asp-page-handler="DeleteImage" class="d-inline">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="imageId" value="@i.ProductImageId" />
+            <button class="btn btn-sm btn-danger">Delete</button>
+          </form>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
+
+<h5>Add Image</h5>
+<form method="post" asp-page-handler="AddImage" class="row g-2">
+  @Html.AntiForgeryToken()
+  <input type="hidden" name="ProductId" value="@Model.Product.ProductId" />
+  <div class="col-md-6"><input name="ImageUrl" class="form-control" placeholder="Image URL" /></div>
+  <div class="col-md-3"><input name="Caption" class="form-control" placeholder="Caption" /></div>
+  <div class="col-md-1"><input name="SortOrder" type="number" value="0" class="form-control" /></div>
+  <div class="col-md-2"><button class="btn btn-primary">Add Image</button></div>
+</form>

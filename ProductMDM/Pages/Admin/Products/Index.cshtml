@@ -1,0 +1,47 @@
+@page
+@model ProductMDM.Pages.Admin.Products.IndexModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+<h2>Products</h2>
+
+<form method="get" class="row g-2 mb-3">
+  <div class="col-md-3">
+    <input name="search" value="@Model.Search" class="form-control" placeholder="Search" />
+  </div>
+  <div class="col-md-3">
+    <select name="brandId" class="form-select">
+      <option value="">All brands</option>
+      @foreach (var b in Model.BrandOptions) { <option value="@b.Value" selected="@(Model.BrandId?.ToString()==b.Value)">@b.Text</option> }
+    </select>
+  </div>
+  <div class="col-md-2">
+    <button class="btn btn-primary">Filter</button>
+  </div>
+  <div class="col-md-4 text-end">
+    <a class="btn btn-success" href="/Admin/Products/Edit">Create Product</a>
+  </div>
+</form>
+
+<table class="table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>SKU</th>
+      <th>Name</th>
+      <th>Brand</th>
+      <th>Default Price</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (var p in Model.Items)
+    {
+      <tr>
+        <td>@p.SKU</td>
+        <td>@p.Name</td>
+        <td>@p.BrandName</td>
+        <td>@(p.DefaultPrice==0?"":p.DefaultPrice.ToString("C2"))</td>
+        <td><a class="btn btn-sm btn-outline-primary" href="/Admin/Products/Edit?id=@p.ProductId">Edit</a></td>
+      </tr>
+    }
+  </tbody>
+</table>

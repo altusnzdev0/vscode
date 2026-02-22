@@ -1,0 +1,15 @@
+@page
+@model ProductMDM.Pages.Admin.Categories.IndexModel
+
+<h2>Categories</h2>
+
+<a class="btn btn-success mb-2" href="/Admin/Categories/Edit">Create Category</a>
+
+<table class="table table-sm">
+  <thead><tr><th>Name</th><th>Parent</th><th></th></tr></thead>
+  <tbody>
+    @foreach(var c in Model.Items){
+      <tr><td>@c.Name</td><td>@c.ParentName</td><td><a class="btn btn-sm btn-outline-primary" href="/Admin/Categories/Edit?id=@c.CategoryId">Edit</a></td></tr>
+    }
+  </tbody>
+</table>
