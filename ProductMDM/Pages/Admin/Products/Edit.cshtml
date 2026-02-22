@@ -7,6 +7,14 @@
 
 <h2>@ViewData["Title"]</h2>
 
+@if (TempData["Success"] != null)
+{
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    @TempData["Success"]
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+}
+
 @if (!Model.EditMode)
 {
     <div class="mb-3"><strong>SKU:</strong> @Model.Product.SKU</div>
@@ -18,17 +26,19 @@
 }
 else
 {
-    <form method="post">
+    <form method="post" id="productForm" novalidate>
       @Html.AntiForgeryToken()
       <input type="hidden" name="Product.ProductId" value="@Model.Product.ProductId" />
       <div class="mb-3">
         <label class="form-label">SKU</label>
-        <input name="Product.SKU" value="@Model.Product.SKU" class="form-control" />
+        <input name="Product.SKU" value="@Model.Product.SKU" class="form-control" required maxlength="100" />
+        <div class="invalid-feedback">SKU is required.</div>
         <span asp-validation-for="Product.SKU" class="text-danger"></span>
       </div>
       <div class="mb-3">
         <label class="form-label">Name</label>
-        <input name="Product.Name" value="@Model.Product.Name" class="form-control" />
+        <input name="Product.Name" value="@Model.Product.Name" class="form-control" required maxlength="250" />
+        <div class="invalid-feedback">Name is required.</div>
         <span asp-validation-for="Product.Name" class="text-danger"></span>
       </div>
       <div class="mb-3">
@@ -53,7 +63,10 @@ else
         <input type="checkbox" name="Product.IsPublished" class="form-check-input" @(Model.Product.IsPublished ? "checked" : "") />
         <label class="form-check-label">Is Published</label>
       </div>
-      <button class="btn btn-primary">Save</button>
+      <button class="btn btn-primary" type="submit">
+        <span id="saveSpinner" class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true"></span>
+        <span id="saveText">Save</span>
+      </button>
       <a class="btn btn-secondary" href="?id=@Model.Product.ProductId">Cancel</a>
     </form>
 }
@@ -109,6 +122,28 @@ else
 </form>
 
 <partial name="_ValidationScriptsPartial" />
+
+<script>
+  (function(){
+    var form = document.getElementById('productForm');
+    if (!form) return;
+    form.addEventListener('submit', function (e) {
+      if (!form.checkValidity()) {
+        e.preventDefault();
+        e.stopPropagation();
+        form.classList.add('was-validated');
+        return;
+      }
+      // disable submit and show spinner
+      var spinner = document.getElementById('saveSpinner');
+      var btnText = document.getElementById('saveText');
+      if (spinner) spinner.classList.remove('d-none');
+      if (btnText) btnText.textContent = 'Saving...';
+      var submitBtn = form.querySelector('button[type=submit]');
+      if (submitBtn) submitBtn.disabled = true;
+    }, false);
+  })();
+</script>
 
 <hr />
 
