@@ -1,38 +1,62 @@
 @page
 @model ProductMDM.Pages.Admin.Products.EditModel
 @{
-    ViewData["Title"] = Model.IsNew ? "Create Product" : "Edit Product";
+    var title = Model.EditMode ? (Model.IsNew ? "Create Product" : "Edit Product") : "Product details";
+    ViewData["Title"] = title;
 }
 
 <h2>@ViewData["Title"]</h2>
 
-<form method="post">
-  @Html.AntiForgeryToken()
-  <div class="mb-3">
-    <label class="form-label">SKU</label>
-    <input asp-for="Product.SKU" class="form-control" />
-    <span asp-validation-for="Product.SKU" class="text-danger"></span>
-  </div>
-  <div class="mb-3">
-    <label class="form-label">Name</label>
-    <input asp-for="Product.Name" class="form-control" />
-    <span asp-validation-for="Product.Name" class="text-danger"></span>
-  </div>
-  <div class="mb-3">
-    <label class="form-label">Brand</label>
-    <select asp-for="Product.BrandId" asp-items="Model.BrandOptions" class="form-select"></select>
-  </div>
-  <div class="mb-3">
-    <label class="form-label">Category</label>
-    <select asp-for="Product.CategoryId" asp-items="Model.CategoryOptions" class="form-select"></select>
-  </div>
-  <div class="mb-3 form-check">
-    <input asp-for="Product.IsPublished" class="form-check-input" />
-    <label class="form-check-label">Is Published</label>
-  </div>
-  <button class="btn btn-primary">Save</button>
-  <a class="btn btn-secondary" href="/Admin/Products">Cancel</a>
-</form>
+@if (!Model.EditMode)
+{
+    <div class="mb-3"><strong>SKU:</strong> @Model.Product.SKU</div>
+    <div class="mb-3"><strong>Name:</strong> @Model.Product.Name</div>
+    <div class="mb-3"><strong>Brand:</strong> @(Model.Product.Brand?.Name ?? "—")</div>
+    <div class="mb-3"><strong>Category:</strong> @(Model.Product.Category?.Name ?? "—")</div>
+    <div class="mb-3"><strong>Published:</strong> @(Model.Product.IsPublished ? "Yes" : "No")</div>
+    <div class="mb-3"><a class="btn btn-primary" href="?id=@Model.Product.ProductId&edit=true">Edit</a> <a class="btn btn-secondary" href="/Admin/Products">Back</a></div>
+}
+else
+{
+    <form method="post">
+      @Html.AntiForgeryToken()
+      <input type="hidden" name="Product.ProductId" value="@Model.Product.ProductId" />
+      <div class="mb-3">
+        <label class="form-label">SKU</label>
+        <input name="Product.SKU" value="@Model.Product.SKU" class="form-control" />
+        <span asp-validation-for="Product.SKU" class="text-danger"></span>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Name</label>
+        <input name="Product.Name" value="@Model.Product.Name" class="form-control" />
+        <span asp-validation-for="Product.Name" class="text-danger"></span>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Brand</label>
+        <select name="Product.BrandId" class="form-select">
+          <option value="">-- Select --</option>
+          @foreach(var b in Model.BrandOptions) {
+            <option value="@b.Value" @(b.Value == Model.Product.BrandId.ToString() ? "selected" : "")>@b.Text</option>
+          }
+        </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Category</label>
+        <select name="Product.CategoryId" class="form-select">
+          <option value="">-- Select --</option>
+          @foreach(var c in Model.CategoryOptions) {
+            <option value="@c.Value" @(c.Value == Model.Product.CategoryId.ToString() ? "selected" : "")>@c.Text</option>
+          }
+        </select>
+      </div>
+      <div class="mb-3 form-check">
+        <input type="checkbox" name="Product.IsPublished" class="form-check-input" @(Model.Product.IsPublished ? "checked" : "") />
+        <label class="form-check-label">Is Published</label>
+      </div>
+      <button class="btn btn-primary">Save</button>
+      <a class="btn btn-secondary" href="?id=@Model.Product.ProductId">Cancel</a>
+    </form>
+}
 
 <hr />
 

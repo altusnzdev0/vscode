@@ -79,12 +79,45 @@ namespace ProductMDM.Controllers.Api
                 .Include(p => p.Attributes)
                 .Include(p => p.Prices)
                 .Include(p => p.Images)
-                .Include(p => p.Relations)
                 .FirstOrDefaultAsync(p => p.ProductId == id);
 
             if (p == null) return NotFound();
 
-            return Ok(p);
+            // Get default price list id for default price projection
+            var defaultPriceListId = await _db.PriceLists.Where(pl => pl.IsDefault).Select(pl => pl.PriceListId).FirstOrDefaultAsync();
+
+            // Project relations with minimal related product info to avoid circular refs
+            var relations = await _db.ProductRelations
+                .Where(r => r.ProductId == id)
+                .Join(_db.Products, r => r.RelatedProductId, rp => rp.ProductId, (r, rp) => new
+                {
+                    r.ProductRelationId,
+                    r.RelatedProductId,
+                    Related = new { rp.ProductId, rp.SKU, rp.Name },
+                    r.RelationType
+                })
+                .ToListAsync();
+
+            var dto = new
+            {
+                p.ProductId,
+                p.SKU,
+                p.Name,
+                p.Description,
+                Brand = p.Brand != null ? new { p.Brand.BrandId, p.Brand.Name } : null,
+                Category = p.Category != null ? new { p.Category.CategoryId, p.Category.Name } : null,
+                Attributes = p.Attributes?.OrderBy(a => a.SortOrder).Select(a => new { a.AttributeId, a.Key, a.Value, a.DataType, a.SortOrder }),
+                Prices = p.Prices?.OrderByDescending(pp => pp.EffectiveFrom).Select(pp => new { pp.ProductPriceId, pp.PriceListId, pp.ListPrice, pp.EffectiveFrom }),
+                Images = p.Images?.OrderBy(i => i.SortOrder).Select(i => new { i.ProductImageId, i.ImageUrl, i.Caption, i.SortOrder, i.IsPrimary }),
+                Relations = relations,
+                DefaultPrice = p.Prices != null ? p.Prices.Where(pp => pp.PriceListId == defaultPriceListId).OrderByDescending(pp => pp.EffectiveFrom).Select(pp => pp.ListPrice).FirstOrDefault() : 0m,
+                p.IsPublished,
+                p.Status,
+                p.CreatedAt,
+                p.UpdatedAt
+            };
+
+            return Ok(dto);
         }
 
         [HttpGet("{id:int}/attributes")]

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "XdZyKp2ErgE=",
+  "dgSpecHash": "3ZCI1l01XH0=",
   "success": true,
-  "projectFilePath": "C:\\users\\mark.corboy\\OneDrive - Altus\\Documents\\GitHub\\vscode\\ProductMDM\\ProductMDM.csproj",
+  "projectFilePath": "c:\\Users\\mark.corboy\\OneDrive - Altus\\Documents\\GitHub\\vscode\\ProductMDM\\ProductMDM.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\mark.corboy\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\mark.corboy\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

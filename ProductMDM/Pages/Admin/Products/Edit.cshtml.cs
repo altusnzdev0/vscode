@@ -18,6 +18,7 @@ namespace ProductMDM.Pages.Admin.Products
 
         [BindProperty]
         public Product Product { get; set; } = new();
+        public bool EditMode { get; set; } = false;
 
         public bool IsNew => Product.ProductId == 0;
         public List<SelectListItem> BrandOptions { get; set; } = new();
@@ -25,12 +26,15 @@ namespace ProductMDM.Pages.Admin.Products
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            EditMode = string.Equals(Request.Query["edit"], "true", StringComparison.OrdinalIgnoreCase);
             BrandOptions = await _db.Brands.OrderBy(b => b.Name).Select(b => new SelectListItem(b.Name, b.BrandId.ToString())).ToListAsync();
             CategoryOptions = await _db.Categories.OrderBy(c => c.Name).Select(c => new SelectListItem(c.Name, c.CategoryId.ToString())).ToListAsync();
 
             if (id.HasValue)
             {
                 var product = await _db.Products
+                    .Include(p => p.Brand)
+                    .Include(p => p.Category)
                     .Include(p => p.Attributes)
                     .Include(p => p.Prices)
                     .Include(p => p.Images)
@@ -69,7 +73,8 @@ namespace ProductMDM.Pages.Admin.Products
             await _db.SaveChangesAsync();
 
             TempData["Success"] = "Product saved.";
-            return RedirectToPage("/Admin/Products/Index");
+            // After save, redirect back to details view for this product
+            return RedirectToPage("./Edit", new { id = Product.ProductId });
         }
 
         public async Task<IActionResult> OnPostAddAttributeAsync(string Key, string? Value, int DataType, int SortOrder = 100)

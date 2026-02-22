@@ -168,3 +168,7 @@ C:\Users\mark.corboy\OneDrive - Altus\Documents\GitHub\vscode\ProductMDM\bin\Deb
 C:\Users\mark.corboy\OneDrive - Altus\Documents\GitHub\vscode\ProductMDM\bin\Debug\net10.0\runtimes\win-arm64\native\e_sqlite3.dll
 C:\Users\mark.corboy\OneDrive - Altus\Documents\GitHub\vscode\ProductMDM\bin\Debug\net10.0\runtimes\win-x64\native\e_sqlite3.dll
 C:\Users\mark.corboy\OneDrive - Altus\Documents\GitHub\vscode\ProductMDM\bin\Debug\net10.0\runtimes\win-x86\native\e_sqlite3.dll
+C:\Users\mark.corboy\OneDrive - Altus\Documents\GitHub\vscode\ProductMDM\obj\Debug\net10.0\ProductMDM.sourcelink.json
+C:\Users\mark.corboy\OneDrive - Altus\Documents\GitHub\vscode\ProductMDM\bin\Debug\net10.0\api_brands.json
+C:\Users\mark.corboy\OneDrive - Altus\Documents\GitHub\vscode\ProductMDM\bin\Debug\net10.0\api_products.json
+C:\Users\mark.corboy\OneDrive - Altus\Documents\GitHub\vscode\ProductMDM\bin\Debug\net10.0\api_product_8.json
