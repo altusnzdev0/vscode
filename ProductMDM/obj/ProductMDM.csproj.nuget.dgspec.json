@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\mark.corboy\\OneDrive - Altus\\Documents\\GitHub\\vscode\\ProductMDM\\ProductMDM.csproj": {}
+    "C:\\Users\\mark.corboy\\OneDrive - Altus\\Documents\\GitHub\\vscode\\ProductMDM\\ProductMDM.csproj": {}
   },
   "projects": {
-    "c:\\Users\\mark.corboy\\OneDrive - Altus\\Documents\\GitHub\\vscode\\ProductMDM\\ProductMDM.csproj": {
+    "C:\\Users\\mark.corboy\\OneDrive - Altus\\Documents\\GitHub\\vscode\\ProductMDM\\ProductMDM.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\mark.corboy\\OneDrive - Altus\\Documents\\GitHub\\vscode\\ProductMDM\\ProductMDM.csproj",
+        "projectUniqueName": "C:\\Users\\mark.corboy\\OneDrive - Altus\\Documents\\GitHub\\vscode\\ProductMDM\\ProductMDM.csproj",
         "projectName": "ProductMDM",
-        "projectPath": "c:\\Users\\mark.corboy\\OneDrive - Altus\\Documents\\GitHub\\vscode\\ProductMDM\\ProductMDM.csproj",
+        "projectPath": "C:\\Users\\mark.corboy\\OneDrive - Altus\\Documents\\GitHub\\vscode\\ProductMDM\\ProductMDM.csproj",
         "packagesPath": "C:\\Users\\mark.corboy\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\mark.corboy\\OneDrive - Altus\\Documents\\GitHub\\vscode\\ProductMDM\\obj\\",
+        "outputPath": "C:\\Users\\mark.corboy\\OneDrive - Altus\\Documents\\GitHub\\vscode\\ProductMDM\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

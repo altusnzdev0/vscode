@@ -49,8 +49,18 @@ namespace ProductMDM.Pages.Admin.Products
 
         public async Task<IActionResult> OnPostAsync()
         {
+            // If BrandId/CategoryId were left blank in the form they arrive as empty
+            // strings and model binding will add a model error for the non-nullable
+            // int properties. Remove those errors so we can apply sensible defaults
+            // server-side and continue validation.
+            ModelState.Remove("Product.BrandId");
+            ModelState.Remove("Product.CategoryId");
+
             if (!ModelState.IsValid)
             {
+                // Ensure dropdown options are populated from the database (Name column)
+                BrandOptions = await _db.Brands.OrderBy(b => b.Name).Select(b => new SelectListItem(b.Name, b.BrandId.ToString())).ToListAsync();
+                CategoryOptions = await _db.Categories.OrderBy(c => c.Name).Select(c => new SelectListItem(c.Name, c.CategoryId.ToString())).ToListAsync();
                 return Page();
             }
 
@@ -62,6 +72,19 @@ namespace ProductMDM.Pages.Admin.Products
             {
                 Product.CreatedAt = DateTime.UtcNow;
                 Product.UpdatedAt = DateTime.UtcNow;
+                // If brand/category not provided, default to the first available to
+                // satisfy non-null FK constraints. This keeps the UI forgiving.
+                if (Product.BrandId == 0)
+                {
+                    var firstBrand = await _db.Brands.OrderBy(b => b.BrandId).FirstOrDefaultAsync();
+                    if (firstBrand != null) Product.BrandId = firstBrand.BrandId;
+                }
+                if (Product.CategoryId == 0)
+                {
+                    var firstCat = await _db.Categories.OrderBy(c => c.CategoryId).FirstOrDefaultAsync();
+                    if (firstCat != null) Product.CategoryId = firstCat.CategoryId;
+                }
+
                 _db.Products.Add(Product);
             }
             else

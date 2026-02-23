@@ -43,5 +43,23 @@ namespace ProductMDM.Pages.Admin.Products
                 DefaultPrice = p.Prices!.Where(pp => pp.PriceListId == defaultPriceListId).OrderByDescending(pp => pp.EffectiveFrom).Select(pp => pp.ListPrice).FirstOrDefault()
             }).ToListAsync<dynamic>();
         }
+
+        public async Task<IActionResult> OnPostDeleteAsync(int id)
+        {
+            if (id == 0) return BadRequest();
+
+            var product = await _db.Products.FindAsync(id);
+            if (product == null)
+            {
+                TempData["Error"] = "Product not found.";
+                return RedirectToPage();
+            }
+
+            _db.Products.Remove(product);
+            await _db.SaveChangesAsync();
+
+            TempData["Success"] = "Product deleted.";
+            return RedirectToPage();
+        }
     }
 }
