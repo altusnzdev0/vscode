@@ -1,0 +1,172 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ProductMDM</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/css/site.css" rel="stylesheet" />
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-3">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">ProductMDM</a>
+        <div class="collapse navbar-collapse">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item"><a class="nav-link" href="/Catalogue">Catalogue</a></li>
+            <li class="nav-item"><a class="nav-link" href="/Admin">Admin</a></li>
+            <li class="nav-item"><a class="nav-link" href="/swagger">Swagger</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      
+<h2>Create Product</h2>
+
+
+
+    <form method="post" id="productForm" novalidate>
+      <input name="__RequestVerificationToken" type="hidden" value="CfDJ8ILd5WGDA5xBgXZ4bXmPBTCuyX5qQV28DL9HqXuE8-S2urjVqWYwN8bKgF8mS3bJV5FfwMhi4DMXWOq7FBtwmkqGsqmuIlSuNfYOSWLV5tnKG_Ghe82LCJse_Xjvq94GHSWHOp47I-KLr071dlNJB8c" />
+      <input type="hidden" name="Product.ProductId" value="0" />
+      <div class="mb-3">
+        <label class="form-label">SKU</label>
+        <input name="Product.SKU" value="" class="form-control" required maxlength="100" />
+        <div class="invalid-feedback">SKU is required.</div>
+        <span asp-validation-for="Product.SKU" class="text-danger"></span>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Name</label>
+        <input name="Product.Name" value="" class="form-control" required maxlength="250" />
+        <div class="invalid-feedback">Name is required.</div>
+        <span asp-validation-for="Product.Name" class="text-danger"></span>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Brand</label>
+        <select name="Product.BrandId" class="form-select">
+          <option value="">-- Select --</option>
+            <option value="1" >Altus</option>
+            <option value="2" >Atlantic</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Category</label>
+        <select name="Product.CategoryId" class="form-select">
+          <option value="">-- Select --</option>
+            <option value="1" >Bifold Hardware</option>
+            <option value="18" >Extrusion</option>
+            <option value="19" >Hardware</option>
+            <option value="2" >Sliding Door Trim/Track</option>
+        </select>
+      </div>
+      <div class="mb-3 form-check">
+        <input type="checkbox" name="Product.IsPublished" class="form-check-input"  />
+        <label class="form-check-label">Is Published</label>
+      </div>
+      <button class="btn btn-primary" type="submit">
+        <span id="saveSpinner" class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true"></span>
+        <span id="saveText">Save</span>
+      </button>
+      <a class="btn btn-secondary" href="?id=0">Cancel</a>
+    </form>
+
+<hr />
+
+<h4>Attributes</h4>
+<table class="table table-sm">
+  <thead><tr><th>Key</th><th>Value</th><th>Type</th><th>Sort</th><th></th></tr></thead>
+  <tbody>
+  </tbody>
+</table>
+
+<h5>Add / Update Attribute</h5>
+<form method="post" asp-page-handler="AddAttribute" class="row g-2">
+  <input name="__RequestVerificationToken" type="hidden" value="CfDJ8ILd5WGDA5xBgXZ4bXmPBTCuyX5qQV28DL9HqXuE8-S2urjVqWYwN8bKgF8mS3bJV5FfwMhi4DMXWOq7FBtwmkqGsqmuIlSuNfYOSWLV5tnKG_Ghe82LCJse_Xjvq94GHSWHOp47I-KLr071dlNJB8c" />
+  <div class="col-md-3">
+    <input name="Key" class="form-control" placeholder="Key" />
+  </div>
+  <div class="col-md-4">
+    <input name="Value" class="form-control" placeholder="Value" />
+  </div>
+  <div class="col-md-2">
+    <select name="DataType" class="form-select">
+      <option value="0">String</option>
+      <option value="1">Int</option>
+      <option value="2">Decimal</option>
+      <option value="3">Bool</option>
+      <option value="4">Date</option>
+    </select>
+  </div>
+  <div class="col-md-1">
+    <input name="SortOrder" type="number" value="100" class="form-control" />
+  </div>
+  <div class="col-md-2">
+    <button class="btn btn-primary">Add / Update</button>
+  </div>
+</form>
+
+<partial name="_ValidationScriptsPartial" />
+
+<script>
+  (function(){
+    var form = document.getElementById('productForm');
+    if (!form) return;
+    form.addEventListener('submit', function (e) {
+      if (!form.checkValidity()) {
+        e.preventDefault();
+        e.stopPropagation();
+        form.classList.add('was-validated');
+        return;
+      }
+      // disable submit and show spinner
+      var spinner = document.getElementById('saveSpinner');
+      var btnText = document.getElementById('saveText');
+      if (spinner) spinner.classList.remove('d-none');
+      if (btnText) btnText.textContent = 'Saving...';
+      var submitBtn = form.querySelector('button[type=submit]');
+      if (submitBtn) submitBtn.disabled = true;
+    }, false);
+  })();
+</script>
+
+<hr />
+
+<h4>Related Products</h4>
+<table class="table table-sm">
+  <thead><tr><th>Related Product</th><th>Type</th><th></th></tr></thead>
+  <tbody>
+  </tbody>
+</table>
+
+<form method="post" asp-page-handler="AddRelation" class="row g-2 mb-3">
+  <input name="__RequestVerificationToken" type="hidden" value="CfDJ8ILd5WGDA5xBgXZ4bXmPBTCuyX5qQV28DL9HqXuE8-S2urjVqWYwN8bKgF8mS3bJV5FfwMhi4DMXWOq7FBtwmkqGsqmuIlSuNfYOSWLV5tnKG_Ghe82LCJse_Xjvq94GHSWHOp47I-KLr071dlNJB8c" />
+  <input type="hidden" name="ProductId" value="0" />
+  <div class="col-md-3"><input name="RelatedProductId" type="number" class="form-control" placeholder="Related ProductId" /></div>
+  <div class="col-md-4"><input name="RelationType" class="form-control" placeholder="Relation type (Accessory)" /></div>
+  <div class="col-md-2"><button class="btn btn-primary">Add Relation</button></div>
+</form>
+
+<h4>Images</h4>
+<table class="table table-sm">
+  <thead><tr><th>Image</th><th>Caption</th><th>Primary</th><th></th></tr></thead>
+  <tbody>
+  </tbody>
+</table>
+
+<h5>Add Image</h5>
+<form method="post" asp-page-handler="AddImage" class="row g-2">
+  <input name="__RequestVerificationToken" type="hidden" value="CfDJ8ILd5WGDA5xBgXZ4bXmPBTCuyX5qQV28DL9HqXuE8-S2urjVqWYwN8bKgF8mS3bJV5FfwMhi4DMXWOq7FBtwmkqGsqmuIlSuNfYOSWLV5tnKG_Ghe82LCJse_Xjvq94GHSWHOp47I-KLr071dlNJB8c" />
+  <input type="hidden" name="ProductId" value="0" />
+  <div class="col-md-6"><input name="ImageUrl" class="form-control" placeholder="Image URL" /></div>
+  <div class="col-md-3"><input name="Caption" class="form-control" placeholder="Caption" /></div>
+  <div class="col-md-1"><input name="SortOrder" type="number" value="0" class="form-control" /></div>
+  <div class="col-md-2"><button class="btn btn-primary">Add Image</button></div>
+</form>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
+

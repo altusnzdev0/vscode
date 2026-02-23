@@ -49,6 +49,12 @@ namespace ProductMDM.Pages.Admin.Products
 
         public async Task<IActionResult> OnPostAsync()
         {
+            if (Product == null)
+            {
+                TempData["Error"] = "Product data was not submitted properly.";
+                return Page();
+            }
+
             // If BrandId/CategoryId were left blank in the form they arrive as empty
             // strings and model binding will add a model error for the non-nullable
             // int properties. Remove those errors so we can apply sensible defaults
@@ -61,6 +67,7 @@ namespace ProductMDM.Pages.Admin.Products
                 // Ensure dropdown options are populated from the database (Name column)
                 BrandOptions = await _db.Brands.OrderBy(b => b.Name).Select(b => new SelectListItem(b.Name, b.BrandId.ToString())).ToListAsync();
                 CategoryOptions = await _db.Categories.OrderBy(c => c.Name).Select(c => new SelectListItem(c.Name, c.CategoryId.ToString())).ToListAsync();
+                EditMode = true;  // Keep form in edit mode so user can correct errors
                 return Page();
             }
 
@@ -72,6 +79,9 @@ namespace ProductMDM.Pages.Admin.Products
             {
                 Product.CreatedAt = DateTime.UtcNow;
                 Product.UpdatedAt = DateTime.UtcNow;
+                // Ensure a sensible default lifecycle status for new products so DB NOT NULL
+                Product.Status = ProductMDM.Models.ProductStatus.Draft;
+
                 // If brand/category not provided, default to the first available to
                 // satisfy non-null FK constraints. This keeps the UI forgiving.
                 if (Product.BrandId == 0)
@@ -90,10 +100,42 @@ namespace ProductMDM.Pages.Admin.Products
             else
             {
                 Product.UpdatedAt = DateTime.UtcNow;
+                // Preserve existing status when updating unless explicitly changed by UI
+                var existingStatus = await _db.Products.Where(p => p.ProductId == Product.ProductId).Select(p => p.Status).FirstOrDefaultAsync();
+                Product.Status = existingStatus;
                 _db.Products.Update(Product);
             }
 
-            await _db.SaveChangesAsync();
+            try
+            {
+                await _db.SaveChangesAsync();
+                
+                // For new products, verify the ID was assigned by the database
+                if (Product.ProductId == 0)
+                {
+                    // Reload to get the assigned ID
+                    await _db.Entry(Product).ReloadAsync();
+                }
+                
+                // Ensure we have a valid ProductId before redirecting
+                if (Product.ProductId <= 0)
+                {
+                    TempData["Error"] = "Product was saved but ID could not be retrieved. Please try again.";
+                    BrandOptions = await _db.Brands.OrderBy(b => b.Name).Select(b => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(b.Name, b.BrandId.ToString())).ToListAsync();
+                    CategoryOptions = await _db.Categories.OrderBy(c => c.Name).Select(c => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(c.Name, c.CategoryId.ToString())).ToListAsync();
+                    EditMode = true;
+                    return Page();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Surface a helpful error to the UI and keep the form populated so the user can correct issues
+                TempData["Error"] = "Failed to save product: " + ex.Message;
+                BrandOptions = await _db.Brands.OrderBy(b => b.Name).Select(b => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(b.Name, b.BrandId.ToString())).ToListAsync();
+                CategoryOptions = await _db.Categories.OrderBy(c => c.Name).Select(c => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(c.Name, c.CategoryId.ToString())).ToListAsync();
+                EditMode = true;  // Keep form in edit mode so user can correct errors
+                return Page();
+            }
 
             TempData["Success"] = "Product saved.";
             // After save, redirect back to details view for this product
