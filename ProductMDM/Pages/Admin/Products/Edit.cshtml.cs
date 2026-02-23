@@ -108,27 +108,35 @@ namespace ProductMDM.Pages.Admin.Products
 
             try
             {
+                Console.WriteLine($"[SAVE] Before SaveChangesAsync: ProductId={Product.ProductId}");
                 await _db.SaveChangesAsync();
+                Console.WriteLine($"[SAVE] After SaveChangesAsync: ProductId={Product.ProductId}");
                 
                 // For new products, verify the ID was assigned by the database
                 if (Product.ProductId == 0)
                 {
+                    Console.WriteLine($"[SAVE] ProductId still 0, attempting to reload from DB...");
                     // Reload to get the assigned ID
                     await _db.Entry(Product).ReloadAsync();
+                    Console.WriteLine($"[SAVE] After ReloadAsync: ProductId={Product.ProductId}");
                 }
                 
                 // Ensure we have a valid ProductId before redirecting
                 if (Product.ProductId <= 0)
                 {
+                    Console.WriteLine($"[SAVE] ERROR: ProductId is invalid ({Product.ProductId}), showing error page");
                     TempData["Error"] = "Product was saved but ID could not be retrieved. Please try again.";
                     BrandOptions = await _db.Brands.OrderBy(b => b.Name).Select(b => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(b.Name, b.BrandId.ToString())).ToListAsync();
                     CategoryOptions = await _db.Categories.OrderBy(c => c.Name).Select(c => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(c.Name, c.CategoryId.ToString())).ToListAsync();
                     EditMode = true;
                     return Page();
                 }
+                
+                Console.WriteLine($"[SAVE] Success! Redirecting to product {Product.ProductId}");
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"[SAVE] Exception: {ex.GetType().Name}: {ex.Message}");
                 // Surface a helpful error to the UI and keep the form populated so the user can correct issues
                 TempData["Error"] = "Failed to save product: " + ex.Message;
                 BrandOptions = await _db.Brands.OrderBy(b => b.Name).Select(b => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(b.Name, b.BrandId.ToString())).ToListAsync();
